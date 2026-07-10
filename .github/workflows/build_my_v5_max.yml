@@ -7,16 +7,25 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    container: qmkfm/qmk_cli:0.2.2
+    runs-on: ubuntu-22.04
     steps:
     - name: Checkout
       uses: actions/checkout@v3
       with:
         submodules: recursive
+
+    - name: Install QMK Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-pip git gcc-avr binutils-avr avr-libc gcc-arm-none-eabi binutils-arm-none-eabi libnewlib-arm-none-eabi dfu-programmer dfu-util
+        python3 -m pip install qmk
+        python3 -m pip install -r requirements.txt
+
     - name: Compile Firmware
       run: |
+        export PATH=$PATH:$HOME/.local/bin
         qmk compile -kb keychron/v5_max/ansi_encoder -km default
+        
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
