@@ -72,6 +72,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     return true;
 }
 
+bool rgb_matrix_indicators_user(void) {
+    if (host_keyboard_led_state().caps_lock) {
+        for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
+            rgb_matrix_set_color(i, 53, 255, 20); // 全鍵盤強制亮螢光綠 (#35ff14)
+        }
+    }
+    return true;
+}
+
 // --- 這裡開始是新增的 CAPS LOCK 燈效連動腳本 ---
 //wireless_playground 
 //main color #35ff14
