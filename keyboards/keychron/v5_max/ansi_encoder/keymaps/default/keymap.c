@@ -72,6 +72,7 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
 #endif // ENCODER_MAP_ENABLE
 
 // --- 這裡開始是新增的 CAPS LOCK 燈效連動腳本 ---
+//2025Q3
 //main color #35ff14
 //cap and num lock color #ff6000
 bool rgb_matrix_indicators_user(void) {
