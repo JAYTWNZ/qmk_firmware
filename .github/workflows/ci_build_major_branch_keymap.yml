@@ -1,0 +1,22 @@
+name: ci build major branch keymap
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: qmkfm/qmk_cli
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+    - name: Compile Firmware
+      run: |
+        qmk compile -kb keychron/v5_max/ansi/rgb -km default
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: v5_max_firmware
+        path: ./*.bin
