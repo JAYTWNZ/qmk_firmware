@@ -109,7 +109,7 @@ bool rgb_matrix_indicators_user(void) {
         };
 
         // 當數字鎖定開啟：右側整片數字區強制變成相同亮橘色 (#ff6000 -> 255, 96, 0)
-        for (uint8_t i = 0; i < 15; i++) {
+        for (uint8_t i = 0; i < 14; i++) {
             rgb_matrix_set_color(num_target_leds[i], 255, 96, 0);
         }
     }
