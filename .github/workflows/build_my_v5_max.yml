@@ -17,6 +17,10 @@ jobs:
     - name: Fix Python Dependencies
       run: |
         python3 -m pip install --break-system-packages -r requirements.txt
+    - name: Clean and Fix Makefile Conflict
+      run: |
+        make clean || true
+        rm -rf .build/ || true
     - name: Compile Firmware
       run: |
         qmk compile -kb keychron/v5_max/ansi_encoder -km default
