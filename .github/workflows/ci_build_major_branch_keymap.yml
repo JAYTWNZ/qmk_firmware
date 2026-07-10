@@ -1,7 +1,9 @@
-name: ci build major branch keymap
+name: Automatic V5 Max Build
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - wireless_playground
 
 jobs:
   build:
