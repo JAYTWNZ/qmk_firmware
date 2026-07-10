@@ -87,16 +87,34 @@ bool rgb_matrix_indicators_user(void) {
 //cap and num lock color #ff6000
 bool rgb_matrix_indicators_user(void) {
     if (host_keyboard_led_state().caps_lock) {
-        // 建立一個包含 V5 Max 這 26 個英文字母按鍵 LED 編號的陣列
-        uint8_t alpha_leds[] = {
-            32, 33, 34, 35, 36, 37, 38, 39, 40, 41, // Q W E R T Y U I O P
-            51, 52, 53, 54, 55, 56, 57, 58, 59,     // A S D F G H J K L
-            68, 69, 70, 71, 72, 73, 74              // Z X C V B N M
+        // 這是精確校正後的 Caps Lock 鍵與 26 個字母真實燈號 (共 27 個按鍵)
+        uint8_t target_leds[] = {
+            30,                                     // Caps Lock 鍵
+            31, 32, 33, 34, 35, 36, 37, 38, 39, 40, // Q W E R T Y U I O P
+            49, 50, 51, 52, 53, 54, 55, 56, 57,     // A S D F G H J K L
+            66, 67, 68, 69, 70, 71, 72              // Z X C V B N M
         };
 
-        // 僅單獨將這 26 個按鍵強制著色為橘色 (#ff6000 -> 255, 96, 0)
-        for (uint8_t i = 0; i < 26; i++) {
-            rgb_matrix_set_color(alpha_leds[i], 255, 96, 0);
+        // 當大寫鎖定開啟：這 27 個按鍵強制變成亮橘色 (#ff6000)
+        for (uint8_t i = 0; i < 27; i++) {
+            rgb_matrix_set_color(target_leds[i], 255, 96, 0);
+        }
+    }
+
+    // 【第二部分：數字鎖定連動】
+    if (host_keyboard_led_state().num_lock) {
+        // Num Lock 鍵本身 + 整個右側九宮格數字鍵區 (共 15 個按鍵)
+        uint8_t num_target_leds[] = {
+            15,                 // Num Lock 鍵本身
+            16, 17, 18,         // / , * , -
+            43, 44, 45, 46,     // 7 , 8 , 9 , +
+            62, 63, 64,         // 4 , 5 , 6
+            80, 81, 82          // 1 , 2 , 3 (含 0、小數點、Numpad Enter 延伸控制區)
+        };
+
+        // 當數字鎖定開啟：右側整片數字區強制變成相同亮橘色 (#ff6000 -> 255, 96, 0)
+        for (uint8_t i = 0; i < 15; i++) {
+            rgb_matrix_set_color(num_target_leds[i], 255, 96, 0);
         }
     }
     return true;
