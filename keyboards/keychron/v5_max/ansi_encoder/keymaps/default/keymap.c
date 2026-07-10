@@ -70,3 +70,23 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
     [WIN_FN] = {ENCODER_CCW_CW(UG_VALD, UG_VALU)},
 };
 #endif // ENCODER_MAP_ENABLE
+
+// --- 這裡開始是新增的 CAPS LOCK 燈效連動腳本 ---
+//main color #35ff14
+//cap and num lock color #ff6000
+bool rgb_matrix_indicators_user(void) {
+    if (host_keyboard_led_state().caps_lock) {
+        // 建立一個包含 V5 Max 這 26 個英文字母按鍵 LED 編號的陣列
+        uint8_t alpha_leds[] = {
+            32, 33, 34, 35, 36, 37, 38, 39, 40, 41, // Q W E R T Y U I O P
+            51, 52, 53, 54, 55, 56, 57, 58, 59,     // A S D F G H J K L
+            68, 69, 70, 71, 72, 73, 74              // Z X C V B N M
+        };
+
+        // 僅單獨將這 26 個按鍵強制著色為橘色 (#ff6000 -> 255, 96, 0)
+        for (uint8_t i = 0; i < 26; i++) {
+            rgb_matrix_set_color(alpha_leds[i], 255, 96, 0);
+        }
+    }
+    return true;
+}
