@@ -80,39 +80,31 @@ bool rgb_matrix_indicators_user(void) {
         rgb_matrix_set_color(i, 53, 255, 20);
     }
 
-     // 【大寫鎖定開啟：獨立點亮 Caps 鍵與 26 個英文字母】
+    / 【特殊狀態 A：當大寫鎖定開啟，將字母區和 CapsLock 本身覆蓋成亮橘色】
     if (host_keyboard_led_state().caps_lock) {
-        // 直接輸入 JSON 物理坐標：[Row, Col]
-        RGB_MATRIX_SET_COLOR_BY_MATRIX(3, 0, 255, 96, 0); // Caps Lock 本身
-        
-        for (uint8_t c = 1; c <= 10; c++) { RGB_MATRIX_SET_COLOR_BY_MATRIX(2, c, 255, 96, 0); } // Q 到 P 排
-        for (uint8_t c = 1; c <= 9;  c++) { RGB_MATRIX_SET_COLOR_BY_MATRIX(3, c, 255, 96, 0); } // A 到 L 排
-        for (uint8_t c = 1; c <= 7;  c++) { RGB_MATRIX_SET_COLOR_BY_MATRIX(4, c, 255, 96, 0); } // Z 到 M 排
+        // 這是一組利用偏移矩陣精準對準的流水號燈號
+        uint8_t caps_target_leds[] = {
+            29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+            47, 48, 49, 50, 51, 52, 53, 54, 55, 56,
+            64, 65, 66, 67, 68, 69, 70
+        };
+        for (uint8_t i = 0; i < 28; i++) {
+            rgb_matrix_set_color(caps_target_leds[i], 255, 96, 0); // 變橘色 (#ff6000)
+        }
     }
 
-    // 【數字鎖定開啟：直接將 info.json 中定義的右側「整片九宮格物理格子」覆蓋成亮橘色】
+    // 【特殊狀態 B：當數字鎖定開啟，將整片九宮格全部覆蓋成亮橘色】
     if (host_keyboard_led_state().num_lock) {
-        // 第一排 (旋鈕快捷與頂部符號)
-        RGB_MATRIX_SET_COLOR_BY_MATRIX(0, 11, 255, 96, 0); // Mute 旋鈕按鍵
-        RGB_MATRIX_SET_COLOR_BY_MATRIX(0, 13, 255, 96, 0); // 右上快捷 1
-        RGB_MATRIX_SET_COLOR_BY_MATRIX(1, 13, 255, 96, 0); // 右上快捷 2
-        RGB_MATRIX_SET_COLOR_BY_MATRIX(1, 14, 255, 96, 0); // Num Lock 本身
-        RGB_MATRIX_SET_COLOR_BY_MATRIX(1, 15, 255, 96, 0); // /
-        RGB_MATRIX_SET_COLOR_BY_MATRIX(1, 16, 255, 96, 0); // *
-        RGB_MATRIX_SET_COLOR_BY_MATRIX(1, 17, 255, 96, 0); // -
-
-        // 中間數字與加減 Del 區
-        RGB_MATRIX_SET_COLOR_BY_MATRIX(2, 13, 255, 96, 0); // Del 鍵
-        for (uint8_t c = 14; c <= 16; c++) { RGB_MATRIX_SET_COLOR_BY_MATRIX(2, c, 255, 96, 0); } // 7, 8, 9
-        RGB_MATRIX_SET_COLOR_BY_MATRIX(2, 17, 255, 96, 0); // + 號鍵
-        
-        for (uint8_t c = 14; c <= 16; c++) { RGB_MATRIX_SET_COLOR_BY_MATRIX(3, c, 255, 96, 0); } // 4, 5, 6
-        for (uint8_t c = 14; c <= 16; c++) { RGB_MATRIX_SET_COLOR_BY_MATRIX(4, c, 255, 96, 0); } // 1, 2, 3
-        RGB_MATRIX_SET_COLOR_BY_MATRIX(4, 17, 255, 96, 0); // Numpad Enter 鍵
-
-        // 最下排
-        RGB_MATRIX_SET_COLOR_BY_MATRIX(5, 14, 255, 96, 0); // 0 鍵
-        RGB_MATRIX_SET_COLOR_BY_MATRIX(5, 16, 255, 96, 0); // . 小數點鍵
+        // 這是一組包含 NumLock、加減乘除、所有數字以及 Enter 加長鍵的精確流水號
+        uint8_t num_target_leds[] = {
+            14, 15, 16, 17, 18, 
+            29, 41, 42, 43, 44, 
+            45, 59, 60, 61, 62, 
+            76, 77, 78, 79, 80
+        };
+        for (uint8_t i = 0; i < 20; i++) {
+            rgb_matrix_set_color(num_target_leds[i], 255, 96, 0); // 變橘色 (#ff6000)
+        }
     }
 
     return true;
