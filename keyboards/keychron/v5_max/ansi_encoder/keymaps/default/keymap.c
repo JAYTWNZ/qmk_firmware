@@ -79,7 +79,7 @@ bool rgb_matrix_indicators_user(void) {
     for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
         rgb_matrix_set_color(i, 53, 255, 20);
     }
-
+    
     // 直接掃描實體鍵盤板子上的所有 Row 與 Col 格子
     for (uint8_t row = 0; row < MATRIX_ROWS; row++) {
         for (uint8_t col = 0; col < MATRIX_COLS; col++) {
@@ -98,12 +98,32 @@ bool rgb_matrix_indicators_user(void) {
                 }
             }
 
-            // 【特殊狀態 B：當數字鎖定開啟，將右側九宮格區（Kp開頭按鍵與 NumLock）精確染成亮橘色】
-            if (host_keyboard_led_state().num_lock) {
-                if (keycode == KC_NUM || (keycode >= KC_P0 && keycode <= KC_PENT) || keycode == KC_LNPAD) {
-                    rgb_matrix_set_color(led_idx, 255, 96, 0); // 變橘色 (#ff6000)
+            // 【B. 數字鎖定連動】：精確管理右側 col >= 14 的整個九宮格區域
+            if (col >= 14) {
+                
+                // 首先抓出：這一格是不是「Num Lock 鍵本身」(座標固定為 row 1, col 14)
+                bool is_numlock_key = (row == 1 && col == 14);
+
+                if (host_keyboard_led_state().num_lock) {
+                    // 【狀態 1：Num Lock 開啟中】
+                    if (is_numlock_key) {
+                        rgb_matrix_set_color(led_idx, 255, 96, 0);  // NumLock 鍵本身亮橘色
+                    }
+                    // 其他九宮格鍵不進行特別著色，維持平時預設的【螢光綠色】
+                } else {
+                    // 【狀態 2：Num Lock 關閉中】
+                    if (!is_numlock_key) {
+                        rgb_matrix_set_color(led_idx, 255, 96, 0);  // 其他數字鍵全部切換成橘色，警告無法輸入數字
+                    }
+                    // NumLock 鍵本身不著色，自動退回平時預設的【螢光綠色】
                 }
             }
+            // 【特殊狀態 B：當數字鎖定開啟，將右側九宮格區（Kp開頭按鍵與 NumLock）精確染成亮橘色】
+            //if (host_keyboard_led_state().num_lock) {
+            //    if (keycode == KC_NUM || (keycode >= KC_P0 && keycode <= KC_PENT) || keycode == KC_LNPAD) {
+            //        rgb_matrix_set_color(led_idx, 255, 96, 0); // 變橘色 (#ff6000)
+            //    }
+            //}
         }
     }
 
