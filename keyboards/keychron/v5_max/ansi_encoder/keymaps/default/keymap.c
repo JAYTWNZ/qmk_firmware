@@ -80,30 +80,40 @@ bool rgb_matrix_indicators_user(void) {
         rgb_matrix_set_color(i, 53, 255, 20);
     }
 
-    // 【特殊狀態 A：當大寫鎖定開啟，將字母區和 CapsLock 本身覆蓋成亮橘色】
+    // 【特殊狀態 A：當大寫鎖定開啟，字母區與 Caps 鍵精確自動變橘色】
     if (host_keyboard_led_state().caps_lock) {
-        // 這是一組利用偏移矩陣精準對準的流水號燈號
-        uint8_t caps_target_leds[] = {
-            29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
-            47, 48, 49, 50, 51, 52, 53, 54, 55, 56,
-            64, 65, 66, 67, 68, 69, 70
+        // 定義要變色的 Keycode 陣列：Caps Lock 鍵 + 26個英文字母
+        uint16_t caps_keys[] = {
+            KC_CAPS,
+            KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P,
+            KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L,
+            KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M
         };
-        for (uint8_t i = 0; i < 28; i++) {
-            rgb_matrix_set_color(caps_target_leds[i], 255, 96, 0); // 變橘色 (#ff6000)
+        // 透過官方轉換器，自動抓取這 27 個按鍵對應的真實燈號並上色為亮橘色 (#ff6000)
+        for (uint8_t i = 0; i < 27; i++) {
+            uint8_t led_idx = rgb_matrix_get_index_from_keycode(caps_keys[i]);
+            if (led_idx != NO_LED) {
+                rgb_matrix_set_color(led_idx, 255, 96, 0);
+            }
         }
     }
 
-    // 【特殊狀態 B：當數字鎖定開啟，將整片九宮格全部覆蓋成亮橘色】
+    // 【特殊狀態 B：當數字鎖定開啟，整個右側九宮格區精確自動變橘色】
     if (host_keyboard_led_state().num_lock) {
-        // 這是一組包含 NumLock、加減乘除、所有數字以及 Enter 加長鍵的精確流水號
-        uint8_t num_target_leds[] = {
-            14, 15, 16, 17, 18, 
-            29, 41, 42, 43, 44, 
-            45, 59, 60, 61, 62, 
-            76, 77, 78, 79, 80
+        // 定義 V5 Max 實體右側九宮格全部的按鍵代碼 (共 17 顆實體鍵)
+        uint16_t numpad_keys[] = {
+            KC_NUM,  KC_PSLS, KC_PAST, KC_PMNS,  // NumLock, / , * , -
+            KC_P7,   KC_P8,   KC_P9,   KC_PPLS,  // 7 , 8 , 9 , +
+            KC_P4,   KC_P5,   KC_P6,             // 4 , 5 , 6
+            KC_P1,   KC_P2,   KC_P3,   KC_PENT,  // 1 , 2 , 3 , 九宮格 Enter
+            KC_P0,   KC_PDOT                     // 0 , . 小數點
         };
-        for (uint8_t i = 0; i < 20; i++) {
-            rgb_matrix_set_color(num_target_leds[i], 255, 96, 0); // 變橘色 (#ff6000)
+        // 自動抓取這 17 個九宮格按鍵所在的實體燈號並上色為亮橘色 (#ff6000)
+        for (uint8_t i = 0; i < 17; i++) {
+            uint8_t led_idx = rgb_matrix_get_index_from_keycode(numpad_keys[i]);
+            if (led_idx != NO_LED) {
+                rgb_matrix_set_color(led_idx, 255, 96, 0);
+            }
         }
     }
 
