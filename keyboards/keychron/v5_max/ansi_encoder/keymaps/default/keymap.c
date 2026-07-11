@@ -35,7 +35,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,            KC_P7,    KC_P8,    KC_P9,      KC_PPLS,
         KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            KC_ENT,             KC_P4,    KC_P5,    KC_P6,
         KC_LSFT,            KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,            KC_RSFT,  KC_UP,    KC_P1,    KC_P2,    KC_P3,      KC_PENT,
-        KC_LCTL,  KC_LOPTN, KC_LCMMD,                               KC_SPC,                                 KC_RCMMD, FN_WIN,   KC_RCTL,  KC_LEFT,  KC_DOWN,  KC_RGHT,  KC_P0,    KC_PDOT           ),
+        KC_LCTL,  KC_LOPTN, KC_LCMMD,                               KC_SPC,                                 KC_RCMMD, FN_MAC,   KC_RCTL,  KC_LEFT,  KC_DOWN,  KC_RGHT,  KC_P0,    KC_PDOT           ),
 
     [MAC_FN] = LAYOUT_ansi_98(
         _______,            KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,             _______,  _______,  _______,    RGB_TOG,
@@ -63,7 +63,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  };
 
 #if defined(ENCODER_MAP_ENABLE)
-const uint16_t PROGMEM encoder_map[][NUM_ENCODERS] = {
+// 【修正：在陣列名稱後方加上 [2] 參數，完美對齊核心編譯器的型態定義，徹底解決 conflicting types 報錯】
+const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
     [MAC_BASE] = {ENCODER_CCW_CW(KC_VOLD, KC_VOLU)},
     [MAC_FN]   = {ENCODER_CCW_CW(RGB_VAD, RGB_VAI)},
     [WIN_BASE] = {ENCODER_CCW_CW(KC_VOLD, KC_VOLU)},
@@ -71,37 +72,36 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS] = {
 };
 #endif // ENCODER_MAP_ENABLE
 
-// --- 使用 Keychron 無線分支專屬物理坐標定位的燈效函式 ---
+// --- 唯一燈效控制函式 ---
 bool rgb_matrix_indicators_user(void) {
     
-    // 平時預設狀態：強迫全鍵盤在背景亮起均勻的螢光綠色 (#35ff14 -> 53, 255, 20)
+    // 平時預設：強制全鍵盤在背景亮起均勻的螢光綠色 (#35ff14 -> 53, 255, 20)
     for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
         rgb_matrix_set_color(i, 53, 255, 20);
     }
     
-    // 遍歷實體鍵盤的所有橫排 (Row) 與直列 (Col)
-    for (uint8_t row = 0; row < MATRIX_ROWS; row++) {
-        for (uint8_t col = 0; col < MATRIX_COLS; col++) {
-            
-            // 【特殊狀態 A：當大寫鎖定開啟，精確點亮 CapsLock 鍵與 26 個英文字母】
-            if (host_keyboard_led_state().caps_lock) {
-                // 定位英文字母區與 Caps 鍵在 V5 Max 板子上的實體行列位置
-                if ((row == 3 && col == 0) ||                               // Caps Lock 鍵
-                    (row == 2 && col >= 1 && col <= 10) ||                  // Q 到 P 排
-                    (row == 3 && col >= 1 && col <= 9) ||                   // A 到 L 排
-                    (row == 4 && col >= 1 && col <= 7)) {                   // Z 到 M 排
-                    
-                    rgb_matrix_set_color_by_cam(row, col, 255, 96, 0); // 強制亮橘色 (#ff6000)
-                }
-            }
+    // 【特殊狀態 A：當大寫鎖定開啟，將字母區獨立覆蓋成亮橘色】
+    if (host_keyboard_led_state().caps_lock) {
+        uint8_t caps_target_leds[] = {
+            29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+            47, 48, 49, 50, 51, 52, 53, 54, 55, 56,
+            64, 65, 66, 67, 68, 69, 70
+        };
+        for (uint8_t i = 0; i < 28; i++) {
+            rgb_matrix_set_color(caps_target_leds[i], 255, 96, 0);
+        }
+    }
 
-            // 【特殊狀態 B：當數字鎖定開啟，精確點亮右側整片物理九宮格（包括音量旋鈕鍵、Enter加長鍵）】
-            if (host_keyboard_led_state().num_lock) {
-                // V5 Max 的右側九宮格在物理矩陣中，完美固定在直列 Col 14 到 Col 18 的範圍內
-                if (col >= 14 && col <= 18) {
-                    rgb_matrix_set_color_by_cam(row, col, 255, 96, 0); // 強制整片九宮格亮橘色 (#ff6000)
-                }
-            }
+    // 【特殊狀態 B：當數字鎖定開啟，將整片九宮格獨立覆蓋成亮橘色】
+    if (host_keyboard_led_state().num_lock) {
+        uint8_t num_target_leds[] = {
+            14, 15, 16, 17, 18, 
+            29, 41, 42, 43, 44, 
+            45, 59, 60, 61, 62, 
+            76, 77, 78, 79, 80
+        };
+        for (uint8_t i = 0; i < 20; i++) {
+            rgb_matrix_set_color(num_target_leds[i], 255, 96, 0);
         }
     }
 
