@@ -80,7 +80,7 @@ bool rgb_matrix_indicators_user(void) {
         rgb_matrix_set_color(i, 53, 255, 20);
     }
 
-    / 【特殊狀態 A：當大寫鎖定開啟，將字母區和 CapsLock 本身覆蓋成亮橘色】
+    // 【特殊狀態 A：當大寫鎖定開啟，將字母區和 CapsLock 本身覆蓋成亮橘色】
     if (host_keyboard_led_state().caps_lock) {
         // 這是一組利用偏移矩陣精準對準的流水號燈號
         uint8_t caps_target_leds[] = {
