@@ -116,14 +116,9 @@ bool rgb_matrix_indicators_user(void) {
                         rgb_matrix_set_color(led_idx, 255, 96, 0);  // 其他數字鍵全部切換成橘色，警告無法輸入數字
                     }
                     // NumLock 鍵本身不著色，自動退回平時預設的【螢光綠色】
+                    rgb_matrix_set_color(led_idx, 53, 255, 20);
                 }
             }
-            // 【特殊狀態 B：當數字鎖定開啟，將右側九宮格區（Kp開頭按鍵與 NumLock）精確染成亮橘色】
-            //if (host_keyboard_led_state().num_lock) {
-            //    if (keycode == KC_NUM || (keycode >= KC_P0 && keycode <= KC_PENT) || keycode == KC_LNPAD) {
-            //        rgb_matrix_set_color(led_idx, 255, 96, 0); // 變橘色 (#ff6000)
-            //    }
-            //}
         }
     }
 
