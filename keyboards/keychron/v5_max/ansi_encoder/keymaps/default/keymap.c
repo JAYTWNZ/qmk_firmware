@@ -79,15 +79,18 @@ bool rgb_matrix_indicators_user(void) {
     for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
         rgb_matrix_set_color(i, 53, 255, 20);
     }
+
+    rgb_matrix_set_color(14, 255, 96, 0);
     
     // 【特殊狀態 A：當大寫鎖定開啟，將字母區獨立覆蓋成亮橘色】
     if (host_keyboard_led_state().caps_lock) {
         uint8_t caps_target_leds[] = {
-            29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
-            47, 48, 49, 50, 51, 52, 53, 54, 55, 56,
-            64, 65, 66, 67, 68, 69, 70
+            30, 
+            31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+            47, 48, 49, 50, 51, 52, 53, 54, 55,
+            63, 64, 65, 66, 67, 68, 69
         };
-        for (uint8_t i = 0; i < 28; i++) {
+        for (uint8_t i = 0; i < 27; i++) {
             rgb_matrix_set_color(caps_target_leds[i], 255, 96, 0);
         }
     }
@@ -95,12 +98,13 @@ bool rgb_matrix_indicators_user(void) {
     // 【特殊狀態 B：當數字鎖定開啟，將整片九宮格獨立覆蓋成亮橘色】
     if (host_keyboard_led_state().num_lock) {
         uint8_t num_target_leds[] = {
-            14, 15, 16, 17, 18, 
-            29, 41, 42, 43, 44, 
-            45, 59, 60, 61, 62, 
-            76, 77, 78, 79, 80
+            14, 15, 16, 17,
+            41, 42, 43, 44, 
+            58, 59, 60, 88,
+            75, 76, 77, 
+                80, 81
         };
-        for (uint8_t i = 0; i < 20; i++) {
+        for (uint8_t i = 0; i < 17; i++) {
             rgb_matrix_set_color(num_target_leds[i], 255, 96, 0);
         }
     }
