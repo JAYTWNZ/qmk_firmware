@@ -97,19 +97,31 @@ bool rgb_matrix_indicators_user(void) {
                 }
             }
 
-            // 【特殊狀態 B：數字鎖定連動檢查，完美執行您的雙態反轉邏輯】
-            if (keycode == KC_NUM || (keycode >= KC_P0 && keycode <= KC_PENT)) {
+            // 【數字鎖定連動檢查：修正版】
+            // 檢查是不是九宮格區域內的按鍵 (包含 NumLock 鍵本身)
+            bool is_numlock = (keycode == KC_NUM || keycode == KC_LNPAD);
+            
+            // 精確抓取九宮格全區：包含數字 0-9、Enter、以及您陣列裡的 KC_PDOT (小數點) 與所有加減乘除符號
+            bool is_numpad = (
+                (keycode >= KC_P0 && keycode <= KC_PENT) || 
+                keycode == KC_PDOT || keycode == KC_PSLS || 
+                keycode == KC_PAST || keycode == KC_PMNS || keycode == KC_PPLS
+            );
+
+            if (is_numlock || is_numpad) {
                 if (host_keyboard_led_state().num_lock) {
-                    if (keycode == KC_NUM) {
+                    // 【狀態 1：Num Lock 開啟中】
+                    if (is_numlock) {
                         rgb_matrix_set_color(led_idx, 255, 96, 0); // 只有 NumLock 鍵本身亮橘色
                     }
                 }   
                 else {
-                    if (keycode == KC_NUM) {
+                    // 【狀態 2：Num Lock 關閉中】
+                    if (is_numlock) {
                         rgb_matrix_set_color(led_idx, 53, 255, 20); // NumLock 鍵本身轉為螢光綠色
                     } 
-                    else if (keycode >= KC_P0 && keycode <= KC_PENT) {
-                        rgb_matrix_set_color(led_idx, 255, 96, 0); // 其他九宮格數字鍵全亮橘色
+                    else {
+                        rgb_matrix_set_color(led_idx, 255, 96, 0); // 其他九宮格按鍵（含小數點）全亮橘色
                     }
                 }
             }
