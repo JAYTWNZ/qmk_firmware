@@ -98,7 +98,7 @@ bool rgb_matrix_indicators_user(void) {
             }
 
             // 【特殊狀態 B：數字鎖定連動檢查，完美執行您的雙態反轉邏輯】
-            if (keycode == KC_NUM || (keycode >= KC_P0 && keycode <= KC_PENT) || keycode == KC_LNPAD) {
+            if (keycode == KC_NUM || (keycode >= KC_P0 && keycode <= KC_PENT)) {
                 if (host_keyboard_led_state().num_lock) {
                     if (keycode == KC_NUM) {
                         rgb_matrix_set_color(led_idx, 255, 96, 0); // 只有 NumLock 鍵本身亮橘色
