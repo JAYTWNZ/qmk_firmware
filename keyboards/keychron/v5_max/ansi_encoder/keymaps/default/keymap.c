@@ -63,7 +63,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  };
 
 #if defined(ENCODER_MAP_ENABLE)
-// 【修正：在陣列名稱後方加上 [2] 參數，完美對齊核心編譯器的型態定義，徹底解決 conflicting types 報錯】
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
     [MAC_BASE] = {ENCODER_CCW_CW(KC_VOLD, KC_VOLU)},
     [MAC_FN]   = {ENCODER_CCW_CW(RGB_VAD, RGB_VAI)},
@@ -72,33 +71,26 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
 };
 #endif // ENCODER_MAP_ENABLE
 
-// --- 唯一燈效控制函式 ---
 bool rgb_matrix_indicators_user(void) {
     
-    // 平時預設：強制全鍵盤在背景亮起均勻的螢光綠色 (#35ff14 -> 53, 255, 20)
     for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
         rgb_matrix_set_color(i, 53, 255, 20);
     }
     
-    // 直接掃描實體鍵盤板子上的所有 Row 與 Col 格子
     for (uint8_t row = 0; row < MATRIX_ROWS; row++) {
         for (uint8_t col = 0; col < MATRIX_COLS; col++) {
             
-            // 透過官方底層對照矩陣，直接抓出這一格實體按鍵配備的真實 LED 流水號
             uint8_t led_idx = g_led_config.matrix_co[row][col];
             if (led_idx == NO_LED) continue;
 
-            // 抓出目前這一個物理格子在 Windows 模式下的原始打字功能按鍵碼
             uint16_t keycode = pgm_read_word(&keymaps[WIN_BASE][row][col]);
 
-            // 【特殊狀態 A：當大寫鎖定開啟，將打字功能為 A-Z 與 CapsLock 的按鍵精確染成亮橘色】
             if (host_keyboard_led_state().caps_lock) {
                 if (keycode == KC_CAPS || (keycode >= KC_A && keycode <= KC_Z)) {
-                    rgb_matrix_set_color(led_idx, 255, 96, 0); // 變橘色 (#ff6000)
+                    rgb_matrix_set_color(led_idx, 255, 96, 0);
                 }
             }
 
-            // 【B. 數字鎖定連動】
             if (host_keyboard_led_state().num_lock) {
                 if (keycode == KC_NUM) {
                     rgb_matrix_set_color(led_idx, 255, 96, 0);
