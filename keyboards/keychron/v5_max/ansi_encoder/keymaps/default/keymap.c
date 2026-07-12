@@ -103,9 +103,11 @@ bool rgb_matrix_indicators_user(void) {
             
             // 精確抓取九宮格全區：包含數字 0-9、Enter、以及您陣列裡的 KC_PDOT (小數點) 與所有加減乘除符號
             bool is_numpad = (
-                (keycode >= KC_P0 && keycode <= KC_PENT) || 
-                keycode == KC_PDOT || keycode == KC_PSLS || 
-                keycode == KC_PAST || keycode == KC_PMNS || keycode == KC_PPLS
+                keycode == KC_PDOT || keycode == KC_PSLS || keycode == KC_PAST || keycode == KC_PMNS || keycode == KC_PPLS ||
+                keycode == KC_P0 || keycode == KC_P1 || keycode == KC_P2 || keycode == KC_P3 || keycode == KC_P4 ||
+                keycode == KC_P5 || keycode == KC_P6 || keycode == KC_P7 || keycode == KC_P8 || keycode == KC_P9 || keycode == KC_PENT ||
+                keycode == KC_KP_0 || keycode == KC_KP_1 || keycode == KC_KP_2 || keycode == KC_KP_3 || keycode == KC_KP_4 ||
+                keycode == KC_KP_5 || keycode == KC_KP_6 || keycode == KC_KP_7 || keycode == KC_KP_8 || keycode == KC_KP_9 || keycode == KC_KP_ENTER
             );
 
             if (is_numlock || is_numpad) {
