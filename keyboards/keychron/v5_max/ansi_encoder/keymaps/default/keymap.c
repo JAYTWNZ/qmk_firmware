@@ -98,24 +98,18 @@ bool rgb_matrix_indicators_user(void) {
                 }
             }
 
-            // 【B. 數字鎖定連動】：精確管理右側 col >= 14 的整個九宮格區域
-            if (col >= 14) {
-                
-                // 首先抓出：這一格是不是「Num Lock 鍵本身」(座標固定為 row 1, col 14)
-                bool is_numlock_key = (row == 1 && col == 14);
-
-                if (host_keyboard_led_state().num_lock) {
-                    // 【狀態 1：Num Lock 開啟中】
-                    if (is_numlock_key) {
-                        rgb_matrix_set_color(led_idx, 255, 96, 0);  // NumLock 鍵本身亮橘色
-                    }
-                    // 其他九宮格鍵不進行特別著色，維持平時預設的【螢光綠色】
-                } else {
-                    // 【狀態 2：Num Lock 關閉中】
-                    if (!is_numlock_key) {
-                        rgb_matrix_set_color(led_idx, 255, 96, 0);  // 其他數字鍵全部切換成橘色，警告無法輸入數字
-                    }
-                    // NumLock 鍵本身不著色，自動退回平時預設的【螢光綠色】
+            // 【B. 數字鎖定連動】
+            if (host_keyboard_led_state().num_lock) {
+                if (keycode == KC_NUM) {
+                    rgb_matrix_set_color(led_idx, 255, 96, 0);
+                }   
+            }
+            else {
+                if (keycode == KC_NUM) {
+                    rgb_matrix_set_color(led_idx, 53, 255, 20);
+                } 
+                else if (keycode >= KC_P0 && keycode <= KC_PENT) {
+                     rgb_matrix_set_color(led_idx, 255, 96, 0);
                 }
             }
         }
